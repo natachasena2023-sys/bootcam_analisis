@@ -417,3 +417,74 @@ plt.show()
 ---
 
 Este documento reúne la síntesis de los conceptos introductorios y de los ejercicios prácticos abordados en el Bootcamp para facilitar su consulta y reutilización.
+
+## 5. Misión 3 · Visualización y Análisis Exploratorio de Datos
+
+La misión 3 introduce un flujo completo de análisis exploratorio de datos (EDA) utilizando pandas, seaborn, matplotlib y plotly para trabajar con información de emprendimientos.
+
+### 5.1 Preparación del Entorno
+- **Librerías clave:** `pandas`, `numpy`, `matplotlib.pyplot`, `seaborn`, `plotly.express`.
+- **Estilos recomendados:** `plt.style.use('fivethirtyeight')` para gráficos de matplotlib y `sns.set_theme(style='whitegrid')` para seaborn.
+- **Fuente de datos:** el archivo `Emprendimiento.xlsx` alojado en GitHub se carga directamente con `pd.read_excel(url)`.
+
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+
+url = 'https://github.com/juliandariogiraldoocampo/analisis_taltech/raw/refs/heads/main/explorador/Emprendimiento.xlsx'
+df = pd.read_excel(url)
+```
+
+### 5.2 Clasificación de Variables y Gráficas Básicas
+- **Categórica nominal:** `Exporta (Sí/No)` se analiza con `value_counts()` y `sns.countplot` para mostrar la distribución de exportadores.
+- **Categórica ordinal:** se crea `Nivel Ingresos` comparando ingresos contra la media más una desviación estándar y se grafica con `countplot`.
+- **Numérica discreta:** se emplean gráficos de barras con `hue` para contrastar departamentos y niveles de ingreso.
+- **Numérica continua:** se resumen ingresos con `describe()` y se inspeccionan outliers mediante `sns.boxplot`.
+
+### 5.3 Proceso de EDA
+- **Dimensiones y tipos:** `df.shape`, `df.info()` y `df.describe()` brindan panorama de filas/columnas y estadísticas básicas.
+- **Conteos categóricos:** se recorre `df.select_dtypes(include='object')` para calcular frecuencias absolutas y relativas.
+- **Histogramas:** `df[vbles_numericas].hist(bins=10)` permite observar la distribución de cada métrica numérica.
+- **Boxplots:** se genera un subplot por variable para detectar asimetrías y valores extremos.
+- **Ranking departamental:** `sns.barplot` resume la cantidad de registros por departamento ordenados.
+
+### 5.4 Visualización Multivariable
+- **Dispersión enriquecida:** `sns.scatterplot` con tamaño (`size`) y color (`hue`) expone la relación entre número de emprendimientos, ingresos y exportaciones.
+- **FacetGrid:** segmenta la distribución de ingresos según exportación o nivel, facilitando comparaciones por subgrupos.
+- **Visualización interactiva:** con `plotly.express` se replican histogramas y gráficos de dispersión filtrando cuantiles para reducir el impacto de valores extremos.
+
+### 5.5 Matrices de Correlación
+- **Heatmap estático:** `sns.heatmap(df.corr(numeric_only=True), annot=True)` visualiza la fuerza y sentido de correlaciones.
+- **Heatmap interactivo:** `px.imshow` ofrece una alternativa navegable.
+- **Métodos disponibles:**
+  - `pearson` (por defecto) para relaciones lineales en datos normales.
+  - `spearman` para relaciones monótonas y datos ordinales.
+  - `kendall` para muestras pequeñas y robustez adicional.
+
+### 5.6 Camino al Proyecto Final
+- **Entornos virtuales:** se recomienda crear un `venv` por proyecto (`python -m venv .venv`), activarlo y seleccionar el intérprete desde VS Code. Ante restricciones de PowerShell se puede usar `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` temporalmente.
+- **Gestión de dependencias:** instalar paquetes dentro del entorno (`pip install streamlit openpyxl`) y generar `requirements.txt` con `pip freeze > requirements.txt`.
+- **Ejecución de aplicaciones:** correr Streamlit mediante `streamlit run app.py` (o `py -m streamlit run app.py`).
+
+### 5.7 Dashboard en Streamlit para Zonas No Interconectadas
+- **Carga y limpieza:** se leen datos CSV desde GitHub, se normalizan acentos y se convierten columnas numéricas que llegan como texto.
+- **Transformaciones:**
+  - Filtrado de departamentos (excluyendo San Andrés y Providencia).
+  - Agrupaciones por departamento/municipio (`groupby`) y pivotes por año (`pivot_table`).
+  - Cálculo de indicadores anuales y variaciones porcentuales (`delta`).
+- **Interfaz Streamlit:**
+  - Configuración de página con `st.set_page_config` y estilos personalizados.
+  - Métricas clave usando `st.metric` en columnas y paneles expandibles (`st.expander`) para tablas detalladas.
+- **Fragmento base:**
+
+```python
+col3.metric('2023', round(tot_ac_23, 2), f'{round(delta_23, 2)}%', border=True)
+col4.metric('2024', round(tot_ac_24, 2), f'{round(delta_24, 2)}%', border=True)
+col5.metric('2025', round(tot_ac_25, 2), f'{round(delta_25, 2)}%', border=True)
+```
+
+### 5.8 Recursos Adicionales
+- Ejemplo de lectura de archivos Parquet remotos con `pd.read_parquet` para ampliar las fuentes de datos del proyecto.
+- Referencias a material complementario sobre estructuras de almacenamiento y análisis exploratorio proporcionado durante la misión.
